@@ -1,0 +1,14 @@
+{
+	"name": "sharex-lite",
+	"description": "A minimal D application.",
+	"copyright": "Copyright © 2015, webfreak",
+	"authors": ["webfreak"],
+	"libs": ["curl"],
+	"targetPath": "bin",
+	"dependencies":
+	{
+		"gtk-d": "~>3.1.4",
+		"imageformats": "~>5.1.0",
+		"derelict-sdl2": "~>1.9.7"
+	}
+}

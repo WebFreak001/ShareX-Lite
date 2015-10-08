@@ -1,0 +1,17 @@
+{
+	"cmd": "dub",
+	"args": [
+		"build"
+	],
+	"name": "Build Default",
+	"sh": false,
+	"targets": {
+		"Run Default": {
+			"cmd": "dub",
+			"sh": false,
+			"args": [
+				"run"
+			]
+		}
+	}
+}
