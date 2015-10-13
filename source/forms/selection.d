@@ -40,7 +40,6 @@ class Selection : Window
 
 		auto pixbuf = captureAll();
 
-		setDefaultSize(pixbuf.getWidth(), pixbuf.getHeight());
 		preview = new SelectionWidget(pixbuf, this, objects);
 		add(preview);
 		addOnButtonPress(&preview.onButtonPress);
@@ -51,8 +50,12 @@ class Selection : Window
 		setDecorated(false);
 		setKeepAbove(true);
 		setGravity(GdkGravity.NORTH_WEST);
+		fullscreen();
 		showAll();
 		move(0, 0);
+		setDefaultSize(pixbuf.getWidth(), pixbuf.getHeight());
+		setSizeRequest(pixbuf.getWidth(), pixbuf.getHeight());
+		setResizable(false);
 		stick();
 	}
 
@@ -143,6 +146,7 @@ private:
 	bool _move = false;
 	Device _mouse;
 	int _mx, _my;
+	int _startX, _startY;
 	int _time = 0;
 	int _radius = 100;
 	SelectionEvent _onSelected;
@@ -214,7 +218,7 @@ public:
 			if(button == 1)
 			{
 				_lmb = false;
-				if(abs(_regions[$ - 1].x - x) < 4 && abs(_regions[$ - 1].y - y) < 4)
+				if(abs(_startX - x) < 4 && abs(_startY - y) < 4)
 				{
 					size_t object;
 					if((object = getObject(cast(int) round(x), cast(int) round(y))) != -1)
@@ -275,6 +279,8 @@ public:
 			{
 				int rx = cast(int) round(x);
 				int ry = cast(int) round(y);
+				_startX = rx;
+				_startY = ry;
 				_selectedRegion = getRegion(rx, ry);
 				if(_selectedRegion == -1)
 				{
