@@ -1,4 +1,4 @@
-module sharex.selection;
+module sharex.forms.selection;
 
 import sharex.region;
 
@@ -118,9 +118,9 @@ public:
 
 	void finish()
 	{
+		_window.close();
 		if(_onSelected !is null && _regions.length > 0)
 			_onSelected(_img, _regions);
-		_window.close();
 	}
 
 	size_t getRegion(int x, int y)

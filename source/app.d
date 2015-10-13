@@ -1,6 +1,5 @@
 import gtk.Main;
 
-import sharex.selection;
 import sharex.forms.mainform;
 
 void main(string[] args)

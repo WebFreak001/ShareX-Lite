@@ -16,17 +16,19 @@ import gdk.Event;
 import gdk.Pixbuf;
 
 import sharex.region;
-import sharex.selection;
 import sharex.imagegen;
+import sharex.language;
 
 import derelict.sdl2.sdl;
 import derelict.sdl2.mixer;
 
 import sharex.widgets.screenshotentry;
+
+import sharex.forms.selection;
 import sharex.forms.about;
+
 import sharex.uploaders.uploader;
 import sharex.uploaders.imgur;
-import sharex.language;
 
 import std.stdio;
 import std.string;
