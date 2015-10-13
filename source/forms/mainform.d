@@ -69,7 +69,13 @@ public:
 
 	void captureRegion()
 	{
-		Selection selection = new Selection();
+		Selection selection = new Selection(false);
+		selection.onSelected = &processSelection;
+	}
+
+	void captureRegionObjects()
+	{
+		Selection selection = new Selection(true);
 		selection.onSelected = &processSelection;
 	}
 
@@ -98,6 +104,8 @@ private:
 				captureFullscreen();
 			else if(cb.getActiveText() == getLanguage["main.tools.capture.region"])
 				captureRegion();
+			else if(cb.getActiveText() == getLanguage["main.tools.capture.objects"])
+				captureRegionObjects();
 			else
 				throw new Exception("Not Implemented");
 			cb.setActiveText(getLanguage["main.tools.capture"]);

@@ -2,6 +2,8 @@ module sharex.uploaders.uploader;
 
 import sharex.imagegen;
 
+public import sharex.core.paths;
+
 public import std.net.curl;
 import std.stdio : writeln;
 import std.file;
@@ -12,6 +14,7 @@ import std.random;
 import std.datetime;
 import std.format;
 import std.string;
+
 import core.thread;
 
 alias UploadDone = void delegate(UploadEvent);
@@ -62,6 +65,14 @@ body
 	onDone(received);
 }
 
+enum UploadType : ubyte
+{
+	text,
+	image,
+	file,
+	url
+}
+
 struct UploadEvent
 {
 	bool success;
@@ -100,25 +111,6 @@ interface Uploader
 	UploadJob* uploadFile(string file);
 
 	UploadJob* uploadText(string text);
-}
-
-@property string screenshotDirectory()
-{
-	auto time = Clock.currTime();
-	return "~/.sharex/screenshots/" ~ format("%04d-%02d", time.year, time.month);
-	// TODO: add option for user folder
-}
-
-string createScreenshotPath(string name)
-{
-	auto time = Clock.currTime();
-	string base = name.stripExtension.strip.replace(" ", "");
-	if(base == "<auto>")
-		base = "";
-	else
-		base ~= "_";
-	string ext = name.extension;
-	return buildPath(screenshotDirectory, format("%s%04d-%02d-%02d_%02d-%02d-%02d%s", base, time.year, time.month, time.day, time.hour, time.minute, time.second, ext));
 }
 
 static Uploader[] uploaders;
