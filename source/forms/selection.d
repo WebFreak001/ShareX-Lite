@@ -451,12 +451,12 @@ public:
 		context.setSourceRgb(1, 1, 1);
 		context.setDash([scale, scale], magOffX);
 
-		context.moveTo(_mx + 8, _my + magOffY);
-		context.lineTo(_mx + 2 * radius + 8, _my + magOffY);
+		context.moveTo(_mx + magOffX - radius, _my + magOffY);
+		context.lineTo(_mx + magOffX + radius, _my + magOffY);
 		context.stroke();
 
-		context.moveTo(_mx + magOffX, _my + 8);
-		context.lineTo(_mx + magOffX, _my + 2 * radius + 8);
+		context.moveTo(_mx + magOffX, _my + magOffY - radius);
+		context.lineTo(_mx + magOffX, _my + magOffY + radius);
 		context.stroke();
 
 		_time++;
