@@ -7,7 +7,7 @@
 	"targetPath": "bin",
 	"dependencies":
 	{
-		"gtk-d": "~>3.1.4",
+		"gtk-d:gtkd": "~>3.1.4",
 		"x11": "~>1.0.9",
 		"imageformats": "~>5.1.0",
 		"derelict-sdl2": "~>1.9.7"
