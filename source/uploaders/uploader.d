@@ -1,8 +1,7 @@
 module sharex.uploaders.uploader;
 
-import sharex.imagegen;
-
 public import sharex.core.paths;
+import sharex.core.imagegen;
 
 public import std.net.curl;
 import std.stdio : writeln;

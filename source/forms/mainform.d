@@ -16,7 +16,6 @@ import gdk.Event;
 import gdk.Pixbuf;
 
 import sharex.region;
-import sharex.imagegen;
 import sharex.language;
 
 import derelict.sdl2.sdl;
@@ -29,6 +28,8 @@ import sharex.forms.about;
 
 import sharex.uploaders.uploader;
 import sharex.uploaders.imgur;
+
+import sharex.core.imagegen;
 
 import std.stdio;
 import std.string;

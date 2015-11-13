@@ -37,3 +37,14 @@ struct Region
 		return format("(%s,%s %sx%s)", x, y, w, h);
 	}
 }
+
+void removeTiny(ref Region[] regions)
+{
+	Region[] fixed;
+	foreach(ref region; regions)
+	{
+		if(region.valid)
+			fixed ~= region;
+	}
+	regions = fixed;
+}

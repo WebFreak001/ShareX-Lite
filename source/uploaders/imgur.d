@@ -1,7 +1,7 @@
 module sharex.uploaders.imgur;
 
 import sharex.uploaders.uploader;
-import sharex.imagegen;
+import sharex.core.imagegen;
 
 import std.net.curl;
 import std.file;
@@ -61,7 +61,9 @@ class ImgurUploader : Uploader
 				{
 					JSONValue response = parseJSON(content);
 
-					assert(response["success"].type == JSON_TYPE.TRUE);
+					// {"data":{"error":"Imgur is over capacity. Please try again.","request":"\/3\/image","method":"POST"},"success":false,"status":<number>}
+					if(response["success"].type != JSON_TYPE.TRUE)
+						throw new Exception(response["data"]["error"].str());
 
 					event.url = response["data"]["link"].str();
 					event.deletionUrl = "https://imgur.com/delete/" ~ response["data"]["deletehash"].str();

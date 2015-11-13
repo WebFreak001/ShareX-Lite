@@ -2,6 +2,8 @@ module sharex.forms.selection;
 
 import sharex.region;
 
+import sharex.core.wmregions;
+
 import cairo.Context;
 import cairo.ImageSurface;
 import cairo.Pattern;
@@ -21,6 +23,8 @@ import gtkc.gdk : GdkWindowP = GdkWindow;
 
 import std.string;
 import std.math;
+
+import core.thread;
 
 Pixbuf captureAll()
 {
@@ -72,67 +76,6 @@ void fix(ref Region[] regions)
 	}
 }
 
-void removeTiny(ref Region[] regions)
-{
-	Region[] fixed;
-	foreach(ref region; regions)
-	{
-		if(region.valid)
-			fixed ~= region;
-	}
-	regions = fixed;
-}
-
-Region[] getObjects()
-{
-	Region[] regions;
-	version(Posix)
-	{
-		import x11.Xlib;
-		import x11.Xatom;
-		import X = x11.X;
-
-		auto display = XOpenDisplay(cast(char*) ":0".toStringz);
-		auto root = XDefaultRootWindow(display);
-
-		X.Atom actual_type;
-		int actual_format;
-		ulong num_items, bytes_after;
-		uint num_children;
-		X.Window* result, children_return;
-		X.Window child, root_return, parent;
-
-		XGetWindowProperty(display, root, XInternAtom(display, "_NET_CLIENT_LIST_STACKING", false), 0, 32768, false, XA_WINDOW, &actual_type, &actual_format, &num_items, &bytes_after, cast(ubyte**) &result);
-
-		XWindowAttributes info;
-		int x, y, igarbage;
-		uint w, h, border, garbage;
-
-		for(int i = cast(int) num_items - 1; i >= 0; i--)
-		{
-			XTranslateCoordinates(display, result[i], root, 0, 0, &x, &y, &child);
-			XGetWindowAttributes(display, result[i], &info);
-
-			if(info.depth > 0 && info.c_class == X.InputOutput)
-			{
-				XQueryTree(display, result[i], &root_return, &parent, &children_return, &num_children);
-				XGetGeometry(display, parent, &root_return, &igarbage, &igarbage, &w, &h, &border, &garbage);
-				// This includes the border now
-				regions ~= Region(x - info.x, y - info.y, w, h);
-			}
-		}
-
-		XFree(result);
-	}
-	else
-	{
-		// TODO: Implement getting windows on other platforms
-		static assert(0);
-	}
-	regions.removeTiny();
-	return regions;
-}
-
 class SelectionWidget : DrawingArea
 {
 private:
@@ -162,7 +105,7 @@ public:
 		_mouse = getDisplay().getDeviceManager().getClientPointer();
 
 		if(objects)
-			_objects = getObjects();
+			new Thread({ _objects = getObjects(); }).start();
 
 		ImageSurface scaled = ImageSurface.create(CairoFormat.RGB24, _img.getWidth(), _img.getHeight());
 		auto ctx = Context.create(scaled);
@@ -406,6 +349,20 @@ public:
 			context.lineTo(r.x + 1, r.y + r.h);
 			context.lineTo(r.x + 1, r.y + 1);
 			context.stroke();
+		}
+
+		foreach(r; _objects)
+		{
+			if(r.valid)
+			{
+				r = r.fixCopy();
+				context.moveTo(r.x + 1, r.y + 1);
+				context.lineTo(r.x + r.w, r.y + 1);
+				context.lineTo(r.x + r.w, r.y + r.h);
+				context.lineTo(r.x + 1, r.y + r.h);
+				context.lineTo(r.x + 1, r.y + 1);
+				context.stroke();
+			}
 		}
 
 		foreach(r; _regions)

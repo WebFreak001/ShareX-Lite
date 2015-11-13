@@ -1,4 +1,4 @@
-module sharex.imagegen;
+module sharex.core.imagegen;
 
 import sharex.region;
 
@@ -23,6 +23,16 @@ struct Bitmap
 	void create()
 	{
 		rgb_pixels.length = width * height * 3;
+	}
+
+	Pixbuf toPixbuf()
+	{
+		return new Pixbuf(rgb_pixels, false);
+	}
+
+	Pixbuf toPixbufCopy()
+	{
+		return new Pixbuf(rgb_pixels, true);
 	}
 
 	void set(int x, int y, ubyte r, ubyte g, ubyte b)
