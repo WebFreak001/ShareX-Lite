@@ -8,11 +8,13 @@ import std.file;
 import std.path;
 import std.json;
 
+import tinyevent;
+
 import core.thread;
 
 static this()
 {
-	uploaders ~= new ImgurUploader();
+	uploaders["imgur"] = new ImgurUploader();
 }
 
 class ImgurUploader : Uploader
@@ -38,19 +40,17 @@ class ImgurUploader : Uploader
 
 		job.previewFile = file;
 		job.title = file.baseName;
-		job.onProgress = (f) {};
-		job.onDone = (f) {};
 
 		job.thread = new Thread(() {
 			uploadHTTP(file, "https://api.imgur.com/3/image", HTTP.Method.post, "image",
-			(HTTP conn) {
+			[(HTTP conn) {
 				conn.addRequestHeader("Authorization", "Client-ID 0ffffa8ef2b13fc");
-			},
-			(float progress) {
-				job.onProgress(progress);
+			}],
+			[(float progress) {
+				job.onProgress.emit(progress);
 				job.progress = progress;
-			},
-			(string content) {
+			}],
+			[(string content) {
 				writeln(content);
 				UploadEvent event;
 				event.success = true;
@@ -78,8 +78,8 @@ class ImgurUploader : Uploader
 				job.thumbnailUrl = event.thumbnailUrl;
 				job.deletionUrl = event.deletionUrl;
 
-				job.onDone(event);
-			});
+				job.onDone.emit(event);
+			}]);
 		});
 
 		return job;

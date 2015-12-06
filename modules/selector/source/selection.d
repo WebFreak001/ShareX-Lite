@@ -1,8 +1,8 @@
-module sharex.forms.selection;
+module modules.selector.selection;
 
-import sharex.region;
+import modules.selector.region;
 
-import sharex.core.wmregions;
+import modules.selector.wmregions;
 
 import cairo.Context;
 import cairo.ImageSurface;
@@ -11,15 +11,15 @@ import cairo.Pattern;
 import gtk.DrawingArea;
 import gtk.Widget;
 import gtk.Window;
+import gtk.MainWindow;
+import gtk.Main;
 
 import gdk.Pixbuf;
-import gdk.Cursor;
 import gdk.Cairo;
 import gdk.Event;
 import gdk.Device;
 import gdk.Screen;
 import gdk.Window : GdkWindow = Window;
-import gtkc.gdk : GdkWindowP = GdkWindow;
 
 import std.string;
 import std.math;
@@ -34,7 +34,7 @@ Pixbuf captureAll()
 	return root.getFromWindow(0, 0, width, height);
 }
 
-class Selection : Window
+class Selection : MainWindow
 {
 	SelectionWidget preview;
 
@@ -64,6 +64,7 @@ class Selection : Window
 	}
 
 	@property ref auto onSelected() { return preview.onSelected; }
+	@property ref auto success() { return preview.success; }
 }
 
 alias SelectionEvent = void delegate(Pixbuf, Region[]);
@@ -95,6 +96,7 @@ private:
 	SelectionEvent _onSelected;
 	Region[] _objects;
 	bool stop = false;
+	bool _success = false;
 
 public:
 	this(Pixbuf buf, Window window, bool objects)
@@ -123,9 +125,13 @@ public:
 	void finish()
 	{
 		stop = true;
-		_window.close();
 		if(_onSelected !is null && _regions.length > 0)
+		{
+			_success = true;
 			_onSelected(_img, _regions);
+		}
+		_window.close();
+		Main.quit();
 	}
 
 	size_t getRegion(int x, int y)
@@ -188,6 +194,7 @@ public:
 				{
 					stop = true;
 					_window.close();
+					Main.quit();
 				}
 				else
 				{
@@ -204,6 +211,7 @@ public:
 			{
 				stop = true;
 				_window.close();
+				Main.quit();
 			}
 			if(key == 36) // Return
 				finish();
@@ -427,4 +435,6 @@ public:
 	@property ref auto fastCapture() { return _fastCapture; }
 
 	@property ref int radius() { return _radius; }
+
+	@property bool success() { return _success; }
 }

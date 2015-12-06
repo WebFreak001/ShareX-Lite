@@ -27,6 +27,16 @@ import std.path;
 	return buildPath(personalDirectory, "history");
 }
 
+@property string scriptsDirectory() nothrow
+{
+	return buildPath(personalDirectory, "scripts");
+}
+
+@property string uploadersDirectory() nothrow
+{
+	return buildPath(personalDirectory, "uploaders");
+}
+
 @property string configDirectory() nothrow
 {
 	return personalDirectory;

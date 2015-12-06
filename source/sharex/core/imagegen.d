@@ -83,16 +83,15 @@ void save(Bitmap bitmap, string file)
 	imageformats.write_image(file, bitmap.width, bitmap.height, bitmap.rgb_pixels, ColFmt.RGB);
 }
 
-Bitmap createBitmap(Pixbuf img, Region[] regions)
+Bitmap cutBitmap(Bitmap raw, Region[] regions)
 {
-	assert(regions.length > 0, "No Regions");
+	if(regions.length == 0)
+		return raw;
 	int minX, minY, maxX, maxY;
 	minX = regions[0].x;
 	minY = regions[0].y;
 	maxX = regions[0].x + regions[0].w;
 	maxY = regions[0].y + regions[0].h;
-
-	Bitmap raw = Bitmap(cast(ubyte[])(img.getPixels()[0 .. img.getWidth() * img.getHeight() * 3]), img.getWidth(), img.getHeight());
 
 	foreach(region; regions)
 	{
@@ -119,4 +118,10 @@ Bitmap createBitmap(Pixbuf img, Region[] regions)
 	}
 
 	return bmp;
+}
+
+Bitmap createBitmap(Pixbuf img, Region[] regions)
+{
+	auto raw = Bitmap(cast(ubyte[])(img.getPixels()[0 .. img.getWidth() * img.getHeight() * 3]), img.getWidth(), img.getHeight());
+	return cutBitmap(raw, regions);
 }

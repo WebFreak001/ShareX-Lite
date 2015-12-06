@@ -1,0 +1,11 @@
+{
+	"name": "selector",
+	"mainSourceFile": "source/main.d",
+	"targetName": "selector",
+	"targetPath": "../../bin",
+	"dependencies":
+	{
+		"gtk-d:gtkd": "~>3.1.4",
+		"x11": "~>1.0.9"
+	}
+}

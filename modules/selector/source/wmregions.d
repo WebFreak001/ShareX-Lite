@@ -1,6 +1,6 @@
-module sharex.core.wmregions;
+module modules.selector.wmregions;
 
-import sharex.region;
+import modules.selector.region;
 
 import std.string;
 

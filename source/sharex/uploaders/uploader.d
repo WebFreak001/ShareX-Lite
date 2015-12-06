@@ -16,10 +16,14 @@ import std.string;
 
 import core.thread;
 
-alias UploadDone = void delegate(UploadEvent);
-alias HTTPDone = void delegate(string);
-alias ProgressChange = void delegate(float);
-alias HTTPHeaders = void delegate(HTTP);
+import tinyevent;
+
+public import sharex.uploaders.imgur;
+
+alias UploadDone = Event!(UploadEvent);
+alias HTTPDone = Event!(string);
+alias ProgressChange = Event!(float);
+alias HTTPHeaders = Event!(HTTP);
 
 void uploadHTTP(string path, string url, HTTP.Method method, string formName, HTTPHeaders headers, ProgressChange onProgress, HTTPDone onDone) in
 {
@@ -50,22 +54,23 @@ body
 		return data.length;
 	};
 	conn.onProgress = (size_t dltotal, size_t dlnow, size_t ultotal, size_t ulnow) {
-		onProgress((ulnow + dlnow) / cast(float) (ultotal + dltotal));
+		onProgress.emit((ulnow + dlnow) / cast(float) (ultotal + dltotal));
 		return 0;
 	};
 
 	conn.contentLength = data.length;
 	conn.setPostData(data, "multipart/form-data; boundary=" ~ boundary);
 
-	headers(conn);
+	headers.emit(conn);
 
     conn.perform();
 
-	onDone(received);
+	onDone.emit(received);
 }
 
 enum UploadType : ubyte
 {
+	invalid,
 	text,
 	image,
 	file,
@@ -112,4 +117,4 @@ interface Uploader
 	UploadJob* uploadText(string text);
 }
 
-static Uploader[] uploaders;
+static Uploader[string] uploaders;
