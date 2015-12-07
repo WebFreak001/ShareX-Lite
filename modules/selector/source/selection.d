@@ -359,20 +359,6 @@ public:
 			context.stroke();
 		}
 
-		foreach(r; _objects)
-		{
-			if(r.valid)
-			{
-				r = r.fixCopy();
-				context.moveTo(r.x + 1, r.y + 1);
-				context.lineTo(r.x + r.w, r.y + 1);
-				context.lineTo(r.x + r.w, r.y + r.h);
-				context.lineTo(r.x + 1, r.y + r.h);
-				context.lineTo(r.x + 1, r.y + 1);
-				context.stroke();
-			}
-		}
-
 		foreach(r; _regions)
 		{
 			if(r.valid)
