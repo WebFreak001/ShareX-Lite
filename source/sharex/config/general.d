@@ -52,8 +52,8 @@ public:
 			if(data.specialUploaders is null)
 			{
 				data.specialUploaders = [
-					"image/file .gif": ["gfycat"],
-					"image/file .ogg": ["videobin"],
+					"image/file \\.gif$": ["gfycat"],
+					"image/file \\.ogg$": ["videobin"],
 					`link ^https?://(www\.)?youtube\.com/watch?v=`: ["youtu.be"]
 				];
 			}
@@ -65,8 +65,8 @@ public:
 		if(data.specialUploaders is null)
 		{
 			data.specialUploaders = [
-				"image/file .gif": ["gfycat"],
-				"image/file .ogg": ["videobin"],
+				"image/file \\.gif$": ["gfycat"],
+				"image/file \\.ogg$": ["videobin"],
 				`link ^https?://(www\.)?youtube\.com/watch?v=`: ["youtu.be"]
 			];
 		}
