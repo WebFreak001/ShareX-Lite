@@ -14,6 +14,7 @@ import gtk.Widget;
 import gtk.Menu;
 import gtk.MenuShell;
 import gtk.MenuItem;
+import gtkc.gtktypes : GtkMenu, GtkAllocation;
 
 import gdk.Event;
 import gdk.Pixbuf;
@@ -47,6 +48,28 @@ import std.path;
 import file = std.file;
 
 import core.thread;
+
+struct PositionEvent
+{
+	MainForm form;
+	Button button;
+}
+
+extern(C) void positionMenu(GtkMenu* menu, int* outx, int* outy, int* pushIn, void* userData)
+{
+	PositionEvent* evt = cast(PositionEvent*) userData;
+	int x, y;
+	int winX, winY;
+	GtkAllocation size;
+	evt.form.getPosition(winX, winY);
+	evt.button.getAllocation(size);
+	evt.button.translateCoordinates(evt.form, 0, 0, x, y);
+	x += size.width + winX;
+	y += winY + 24; // offset menu y by +24
+	writeln("X: ", x, " Y: ", y);
+	*outx = x;
+	*outy = y;
+}
 
 class MainForm : MainWindow
 {
@@ -210,7 +233,10 @@ private:
 
 	void linkMenu(Button button, Menu menu)
 	{
-		button.addOnClicked((btn) { menu.popup(null, null, null, null, 1, 0); });
+		button.addOnClicked((btn)
+		{
+			menu.popup(null, null, &positionMenu, cast(void*) new PositionEvent(this, button), 1, 0);
+		});
 	}
 
 	void addComponents()
