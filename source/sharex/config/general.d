@@ -70,6 +70,7 @@ public:
 				`link ^https?://(www\.)?youtube\.com/watch?v=`: ["youtu.be"]
 			];
 		}
+		file.mkdirRecurse(path.dirName);
 		file.write(path, data.toJSON.toPrettyString);
 	}
 }
