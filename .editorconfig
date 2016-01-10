@@ -1,8 +1,12 @@
+[*]
+max_line_length = 180
+indent_style = tab
+
 [*.d]
 # allman, otbs or stroustrup - see https://en.wikipedia.org/wiki/Indent_style
 dfmt_brace_style = allman
 # The formatting process will usually keep lines below this length, but they may be up to max_line_length columns long.
-dfmt_soft_max_line_length = 80
+dfmt_soft_max_line_length = 160
 # Place operators on the end of the previous line when splitting lines
 dfmt_split_operator_at_line_end = false
 # Insert space after the closing paren of a cast expression

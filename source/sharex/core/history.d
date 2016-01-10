@@ -9,19 +9,15 @@ import sharex.uploaders.uploader;
 
 void appendHistory(string file, UploadType type, string host, string url, string thumb = "", string deletion = "")
 {
-	if(!screenshotDirectory.exists)
+	if (!screenshotDirectory.exists)
 		mkdirRecurse(screenshotDirectory);
 
-	JSONValue entry = [
-		"file": JSONValue(file),
-		"type": JSONValue(cast(int) type),
-		"host": JSONValue(host),
-	];
-	if(url.length > 0)
+	JSONValue entry = ["file" : JSONValue(file), "type" : JSONValue(cast(int) type), "host" : JSONValue(host),];
+	if (url.length > 0)
 		entry["url"] = JSONValue(url);
-	if(thumb.length > 0)
+	if (thumb.length > 0)
 		entry["thumb"] = JSONValue(thumb);
-	if(deletion.length > 0)
+	if (deletion.length > 0)
 		entry["deletion"] = JSONValue(deletion);
 
 	createHistoryFilename.write("," ~ entry.toString());

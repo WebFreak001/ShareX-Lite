@@ -19,14 +19,25 @@ static this()
 
 class ImgurUploader : Uploader
 {
-	@property bool canUploadImage() { return true; }
-	@property bool canUploadFile() { return false; }
-	@property bool canUploadText() { return false; }
+	@property bool canUploadImage()
+	{
+		return true;
+	}
+
+	@property bool canUploadFile()
+	{
+		return false;
+	}
+
+	@property bool canUploadText()
+	{
+		return false;
+	}
 
 	UploadJob* uploadImage(Bitmap bmp)
 	{
 		string f = createScreenshotPath("<auto>.png");
-		if(!exists(f.dirName))
+		if (!exists(f.dirName))
 		{
 			mkdirRecurse(f.dirName);
 		}
@@ -42,15 +53,9 @@ class ImgurUploader : Uploader
 		job.title = file.baseName;
 
 		job.thread = new Thread(() {
-			uploadHTTP(file, "https://api.imgur.com/3/image", HTTP.Method.post, "image",
-			[(HTTP conn) {
+			uploadHTTP(file, "https://api.imgur.com/3/image", HTTP.Method.post, "image", [(HTTP conn) {
 				conn.addRequestHeader("Authorization", "Client-ID 0ffffa8ef2b13fc");
-			}],
-			[(float progress) {
-				job.onProgress.emit(progress);
-				job.progress = progress;
-			}],
-			[(string content) {
+			}], [(float progress) { job.onProgress.emit(progress); job.progress = progress; }], [(string content) {
 				writeln(content);
 				UploadEvent event;
 				event.success = true;
@@ -62,13 +67,13 @@ class ImgurUploader : Uploader
 					JSONValue response = parseJSON(content);
 
 					// {"data":{"error":"Imgur is over capacity. Please try again.","request":"\/3\/image","method":"POST"},"success":false,"status":<number>}
-					if(response["success"].type != JSON_TYPE.TRUE)
+					if (response["success"].type != JSON_TYPE.TRUE)
 						throw new Exception(response["data"]["error"].str());
 
 					event.url = response["data"]["link"].str();
 					event.deletionUrl = "https://imgur.com/delete/" ~ response["data"]["deletehash"].str();
 				}
-				catch(Throwable e)
+				catch (Throwable e)
 				{
 					event.success = false;
 					debug throw e;

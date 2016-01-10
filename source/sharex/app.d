@@ -21,13 +21,13 @@ void main(string[] args)
 		threadsInit();
 		chdir(thisExePath.dirName);
 		Config.load();
-		scope(exit)
+		scope (exit)
 			Config.save();
 		Main.init(args);
 		mainForm = new MainForm();
 		Main.run();
 	}
-	catch(Exception e)
+	catch (Exception e)
 	{
 		writeln("Program crashed with exception");
 		writeln(e);

@@ -37,7 +37,7 @@ struct Bitmap
 
 	void set(int x, int y, ubyte r, ubyte g, ubyte b)
 	{
-		if(x >= width || y >= height || x < 0 || y < 0)
+		if (x >= width || y >= height || x < 0 || y < 0)
 			return;
 		rgb_pixels[(x + y * width) * 3 + 0] = r;
 		rgb_pixels[(x + y * width) * 3 + 1] = g;
@@ -46,35 +46,35 @@ struct Bitmap
 
 	ubyte[3] get(int x, int y)
 	{
-		if(x >= width || y >= height || x < 0 || y < 0)
-			return cast(ubyte[3]) [0, 0, 0];
+		if (x >= width || y >= height || x < 0 || y < 0)
+			return cast(ubyte[3])[0, 0, 0];
 		return cast(ubyte[3]) rgb_pixels[(x + y * width) * 3 .. (x + y * width) * 3 + 3][0 .. 3];
 	}
 
 	void copyRow(in Bitmap source, int sourceX, int sourceY, int destX, int destY, int destW)
 	{
-		if(sourceY < 0 || sourceY >= source.height || destY < 0 || destY >= height)
+		if (sourceY < 0 || sourceY >= source.height || destY < 0 || destY >= height)
 			return;
 		int sourceW = destW;
-		if(sourceX < 0)
+		if (sourceX < 0)
 		{
 			sourceW += sourceX;
 			sourceX = 0;
 		}
-		if(destX < 0)
+		if (destX < 0)
 		{
 			destW += destX;
 			destX = 0;
 		}
-		if(destX + destW >= width)
+		if (destX + destW >= width)
 			destW = width - destX - 1;
-		if(sourceX + sourceW >= source.width)
+		if (sourceX + sourceW >= source.width)
 			sourceW = source.width - sourceX - 1;
-		if(sourceW > destW)
+		if (sourceW > destW)
 			sourceW = destW;
 		rgb_pixels[(destX + destY * width) * 3 .. (destX + destY * width + destW) * 3 + 3] = 0;
-		rgb_pixels[(destX + destY * width) * 3 .. (destX + destY * width + sourceW) * 3 + 3]
-			= source.rgb_pixels[(sourceX + sourceY * source.width) * 3 .. (sourceX + sourceY * source.width + sourceW) * 3 + 3];
+		rgb_pixels[(destX + destY * width) * 3 .. (destX + destY * width + sourceW) * 3 + 3] = source.rgb_pixels[(sourceX + sourceY * source.width) * 3 .. (
+			sourceX + sourceY * source.width + sourceW) * 3 + 3];
 	}
 }
 
@@ -85,7 +85,7 @@ void save(Bitmap bitmap, string file)
 
 Bitmap cutBitmap(Bitmap raw, Region[] regions)
 {
-	if(regions.length == 0)
+	if (regions.length == 0)
 		return raw;
 	int minX, minY, maxX, maxY;
 	minX = regions[0].x;
@@ -93,7 +93,7 @@ Bitmap cutBitmap(Bitmap raw, Region[] regions)
 	maxX = regions[0].x + regions[0].w;
 	maxY = regions[0].y + regions[0].h;
 
-	foreach(region; regions)
+	foreach (region; regions)
 	{
 		minX = min(minX, region.x);
 		minY = min(minY, region.y);
@@ -107,10 +107,10 @@ Bitmap cutBitmap(Bitmap raw, Region[] regions)
 	bmp.height = maxY - minY;
 	bmp.create();
 
-	foreach(region; regions)
+	foreach (region; regions)
 	{
 		region.fix();
-		for(int y = region.y; y < region.y + region.h; y++)
+		for (int y = region.y; y < region.y + region.h; y++)
 		{
 			// Fast copy
 			bmp.copyRow(raw, region.x, y, region.x - minX, y - minY, region.w);

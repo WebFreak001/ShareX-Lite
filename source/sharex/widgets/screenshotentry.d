@@ -35,9 +35,9 @@ private:
 
 	void onProgress(float progress)
 	{
-		if(progress > 1)
+		if (progress > 1)
 			progress = 1;
-		if(progress < 0)
+		if (progress < 0)
 			progress = 0;
 		_progress.setText(to!string(round(progress * 999) / 10) ~ "%");
 		_progress.setFraction(progress);
@@ -118,60 +118,59 @@ public:
 	void onMenu(MenuItem item)
 	{
 		// Must exist and not have a submenu
-		if(item && !item.getSubmenu())
+		if (item && !item.getSubmenu())
 		{
 			std.stdio.writeln("Clicked ", item.getActionName());
-			if(item.getActionName().length > 0)
-				switch(item.getActionName())
-				{
-				case "openurl":
-					if(url.length > 0)
-						openURL(url);
-					else
-						std.stdio.writeln("URL empty"); // TODO: replace with debugger
-					break;
-				case "openshorturl":
-					if(shortenedUrl.length > 0)
-						openURL(shortenedUrl);
-					else
-						std.stdio.writeln("URL empty"); // TODO: replace with debugger
-					break;
-				case "openthumburl":
-					if(thumbnailUrl.length > 0)
-						openURL(thumbnailUrl);
-					else
-						std.stdio.writeln("URL empty"); // TODO: replace with debugger
-					break;
-				case "opendeleteurl":
-					if(deletionUrl.length > 0)
-						openURL(deletionUrl);
-					else
-						std.stdio.writeln("URL empty"); // TODO: replace with debugger
-					break;
-				case "openfile":
-					break;
-				case "openfolder":
-					break;
-				case "reupload":
-					break;
-				case "deletefile":
-					break;
-				case "showresponse":
-					break;
-				case "clear":
-					break;
-				default:
-					throw new Exception("Not implemented action: " ~ item.getActionName());
-				}
+			if (item.getActionName().length > 0) switch (item.getActionName())
+			{
+			case "openurl":
+				if (url.length > 0)
+					openURL(url);
+				else
+					std.stdio.writeln("URL empty"); // TODO: replace with debugger
+				break;
+			case "openshorturl":
+				if (shortenedUrl.length > 0)
+					openURL(shortenedUrl);
+				else
+					std.stdio.writeln("URL empty"); // TODO: replace with debugger
+				break;
+			case "openthumburl":
+				if (thumbnailUrl.length > 0)
+					openURL(thumbnailUrl);
+				else
+					std.stdio.writeln("URL empty"); // TODO: replace with debugger
+				break;
+			case "opendeleteurl":
+				if (deletionUrl.length > 0)
+					openURL(deletionUrl);
+				else
+					std.stdio.writeln("URL empty"); // TODO: replace with debugger
+				break;
+			case "openfile":
+				break;
+			case "openfolder":
+				break;
+			case "reupload":
+				break;
+			case "deletefile":
+				break;
+			case "showresponse":
+				break;
+			case "clear":
+				break;
+			default:
+				throw new Exception("Not implemented action: " ~ item.getActionName());
+			}
 		}
 	}
 
 	bool onRMB(Event event, Widget widget)
 	{
 		uint button;
-		if(event.getButton(button))
+		if (event.getButton(button))
 		{
-			if(button == 3)
+			if (button == 3)
 			{
 				_menu.popup(null, null, null, null, button, event.getTime());
 			}

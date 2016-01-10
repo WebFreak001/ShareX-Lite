@@ -8,12 +8,12 @@ struct Region
 
 	void fix()
 	{
-		if(w < 0)
+		if (w < 0)
 		{
 			x += w;
 			w = -w;
 		}
-		if(h < 0)
+		if (h < 0)
 		{
 			y += h;
 			h = -h;
@@ -41,9 +41,9 @@ struct Region
 void removeTiny(ref Region[] regions)
 {
 	Region[] fixed;
-	foreach(ref region; regions)
+	foreach (ref region; regions)
 	{
-		if(region.valid)
+		if (region.valid)
 			fixed ~= region;
 	}
 	regions = fixed;

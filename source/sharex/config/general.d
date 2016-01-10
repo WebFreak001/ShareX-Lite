@@ -30,7 +30,7 @@ public:
 		bool fallthroughServices = true;
 		string[][string] specialUploaders;
 	}
-	
+
 	Data data;
 
 	this()
@@ -41,7 +41,7 @@ public:
 
 	void load()
 	{
-		if(!file.exists(path))
+		if (!file.exists(path))
 		{
 			save();
 		}
@@ -49,26 +49,18 @@ public:
 		{
 			string content = file.readText(path);
 			data = fromJSON!Data(parseJSON(content));
-			if(data.specialUploaders is null)
+			if (data.specialUploaders is null)
 			{
-				data.specialUploaders = [
-					"image/file \\.gif$": ["gfycat"],
-					"image/file \\.ogg$": ["videobin"],
-					`link ^https?://(www\.)?youtube\.com/watch?v=`: ["youtu.be"]
-				];
+				data.specialUploaders = ["image/file \\.gif$" : ["gfycat"], "image/file \\.ogg$" : ["videobin"], `link ^https?://(www\.)?youtube\.com/watch?v=` : ["youtu.be"]];
 			}
 		}
 	}
 
 	void save()
 	{
-		if(data.specialUploaders is null)
+		if (data.specialUploaders is null)
 		{
-			data.specialUploaders = [
-				"image/file \\.gif$": ["gfycat"],
-				"image/file \\.ogg$": ["videobin"],
-				`link ^https?://(www\.)?youtube\.com/watch?v=`: ["youtu.be"]
-			];
+			data.specialUploaders = ["image/file \\.gif$" : ["gfycat"], "image/file \\.ogg$" : ["videobin"], `link ^https?://(www\.)?youtube\.com/watch?v=` : ["youtu.be"]];
 		}
 		file.mkdirRecurse(path.dirName);
 		file.write(path, data.toJSON.toPrettyString);

@@ -30,12 +30,12 @@ static Workflow[string] workflows;
 
 shared static this()
 {
-	if(!file.exists(scriptsDirectory))
+	if (!file.exists(scriptsDirectory))
 	{
 		file.mkdirRecurse(scriptsDirectory);
 	}
 
-	foreach(entry; file.dirEntries(scriptsDirectory, file.SpanMode.shallow, false))
+	foreach (entry; file.dirEntries(scriptsDirectory, file.SpanMode.shallow, false))
 	{
 		workflows[entry.baseName.stripExtension] = new Workflow(entry);
 	}

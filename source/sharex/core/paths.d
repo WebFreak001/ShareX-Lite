@@ -6,7 +6,7 @@ import std.path;
 
 @property string personalDirectory() nothrow
 {
-	version(Posix)
+	version (Posix)
 	{
 		return expandTilde("~/.sharex");
 	}
@@ -52,11 +52,12 @@ string createScreenshotPath(string name)
 {
 	auto time = Clock.currTime();
 	string base = name.stripExtension.strip.replace(" ", "");
-	if(base == "<auto>")
+	if (base == "<auto>")
 		base = "";
 	else
 		base ~= "_";
 	string ext = name.extension;
 	// screenshots/YEAR-MONTH/PREFIX_YEAR-MONTH-DAY_HOUR-MINUTE-SECOND.EXTENSION
-	return buildPath(screenshotDirectory, format("%04d-%02d", time.year, time.month), format("%s%04d-%02d-%02d_%02d-%02d-%02d%s", base, time.year, time.month, time.day, time.hour, time.minute, time.second, ext));
+	return buildPath(screenshotDirectory, format("%04d-%02d", time.year, time.month), format("%s%04d-%02d-%02d_%02d-%02d-%02d%s", base, time.year, time.month,
+		time.day, time.hour, time.minute, time.second, ext));
 }

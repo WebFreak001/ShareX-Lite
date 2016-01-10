@@ -55,7 +55,7 @@ struct PositionEvent
 	Button button;
 }
 
-extern(C) void positionMenu(GtkMenu* menu, int* outx, int* outy, int* pushIn, void* userData)
+extern (C) void positionMenu(GtkMenu* menu, int* outx, int* outy, int* pushIn, void* userData)
 {
 	PositionEvent* evt = cast(PositionEvent*) userData;
 	int x, y;
@@ -166,10 +166,7 @@ private:
 				switch (item.getActionName())
 				{
 				case "fullscreen":
-					new Thread({
-						auto bmp = *captureFullscreen();
-						uploadImage(addJob, data, bmp);
-					}).start();
+					new Thread({ auto bmp = *captureFullscreen(); uploadImage(addJob, data, bmp); }).start();
 					break;
 				case "region":
 					new Thread({ uploadImage(addJob, data, *captureRegion()); }).start();
@@ -216,8 +213,7 @@ private:
 		if (event.getCoords(x, y))
 			if (screenshots.getRowAtY(cast(int) y) && screenshots.getRowAtY(cast(int) y).getChild())
 				if (cast(ScreenshotEntry) screenshots.getRowAtY(cast(int) y).getChild())
-					(cast(ScreenshotEntry) screenshots.getRowAtY(cast(int) y).getChild()).onRMB(event,
-						widget);
+					(cast(ScreenshotEntry) screenshots.getRowAtY(cast(int) y).getChild()).onRMB(event, widget);
 		return false;
 	}
 
@@ -233,10 +229,7 @@ private:
 
 	void linkMenu(Button button, Menu menu)
 	{
-		button.addOnClicked((btn)
-		{
-			menu.popup(null, null, &positionMenu, cast(void*) new PositionEvent(this, button), 1, 0);
-		});
+		button.addOnClicked((btn) { menu.popup(null, null, &positionMenu, cast(void*) new PositionEvent(this, button), 1, 0); });
 	}
 
 	void addComponents()
@@ -251,31 +244,25 @@ private:
 
 		// https://dl.dropboxusercontent.com/u/14076298/ShareX/2015/09/c4fH7nEkeR.mp4
 		Button btnCapture = new Button(strings.main_tools_capture);
-		linkMenu(btnCapture, buildMenu([strings.main_tools_capture_fullscreen,
-			strings.main_tools_capture_window, // TODO: Needs to be a submenu listing open windows
-			strings.main_tools_capture_region,
-			strings.main_tools_capture_objects,], ["fullscreen", "", "region",
-			"objects"], &btnCapture_changed));
+		linkMenu(btnCapture, buildMenu([strings.main_tools_capture_fullscreen, strings.main_tools_capture_window, // TODO: Needs to be a submenu listing open windows
+		strings.main_tools_capture_region,
+			strings.main_tools_capture_objects,], ["fullscreen", "", "region", "objects"], &btnCapture_changed));
 
 		uploadPanel.add(btnCapture);
 
 		auto btnUpload = new Button(strings.main_tools_upload);
-		linkMenu(btnUpload, buildMenu([strings.main_tools_upload_file,
-			strings.main_tools_upload_folder, strings.main_tools_upload_clipboard, strings.main_tools_upload_url],
-			["file", "folder", "clipboard", "url"], &btnUpload_changed));
+		linkMenu(btnUpload, buildMenu([strings.main_tools_upload_file, strings.main_tools_upload_folder, strings.main_tools_upload_clipboard,
+			strings.main_tools_upload_url], ["file", "folder", "clipboard", "url"], &btnUpload_changed));
 		uploadPanel.add(btnUpload);
 
 		auto btnTools = new Button(strings.main_tools_tools);
-		linkMenu(btnTools, buildMenu([strings.main_tools_tools_colorpicker,
-			strings.main_tools_tools_screencolorpicker, strings.main_tools_tools_hashcheck,
-			strings.main_tools_tools_ruler, strings.main_tools_tools_indexfolder],
-			["colorpicker", "screencolorpicker", "hashcheck", "ruler", "indexfolder"],
-			&btnUpload_changed));
+		linkMenu(btnTools, buildMenu([strings.main_tools_tools_colorpicker, strings.main_tools_tools_screencolorpicker, strings.main_tools_tools_hashcheck,
+			strings.main_tools_tools_ruler, strings.main_tools_tools_indexfolder], ["colorpicker", "screencolorpicker", "hashcheck", "ruler", "indexfolder"], &btnUpload_changed));
 		uploadPanel.add(btnTools);
 
 		auto btnWorkflows = new Button(strings.main_tools_workflows);
 		string[] workflows;
-		foreach(name, handler; Workflow.workflows)
+		foreach (name, handler; Workflow.workflows)
 			workflows ~= name;
 		linkMenu(btnWorkflows, buildMenu(workflows, workflows, &btnWorkflow_changed));
 		uploadPanel.add(btnWorkflows);
@@ -284,14 +271,12 @@ private:
 		toolPanel.add(new Separator(Orientation.HORIZONTAL));
 
 		auto btnAfterCapture = new Button("After Capture");
-		linkMenu(btnAfterCapture, buildMenu(["Open in Editor",
-			"Copy Image to Clipboard", "Save Image to File", "Upload Image",
-			"Delete File locally"], ["", "", "", "", ""], &btnUpload_changed));
+		linkMenu(btnAfterCapture, buildMenu(["Open in Editor", "Copy Image to Clipboard", "Save Image to File", "Upload Image", "Delete File locally"], ["",
+			"", "", "", ""], &btnUpload_changed));
 		settingsPanel.add(btnAfterCapture);
 
 		auto btnAfterUpload = new Button("After Upload");
-		linkMenu(btnAfterUpload, buildMenu(["Shorten URL",
-			"Copy URL to clipboard", "Open URL"], ["", "", ""], &btnUpload_changed));
+		linkMenu(btnAfterUpload, buildMenu(["Shorten URL", "Copy URL to clipboard", "Open URL"], ["", "", ""], &btnUpload_changed));
 		settingsPanel.add(btnAfterUpload);
 
 		settingsPanel.add(new Button("Destination Settings"));
@@ -308,8 +293,7 @@ private:
 		miscPanel.add(btnAbout);
 
 		auto btnDebug = new Button("Debug");
-		linkMenu(btnDebug, buildMenu(["Debug log", "Test Services"], ["log",
-			"test-services"], &btnUpload_changed));
+		linkMenu(btnDebug, buildMenu(["Debug log", "Test Services"], ["log", "test-services"], &btnUpload_changed));
 		miscPanel.add(btnDebug);
 
 		toolPanel.add(miscPanel);

@@ -15,9 +15,9 @@ static IScriptProvider[string] scriptProviders;
 
 static void run(string file)
 {
-	foreach(extension, provider; scriptProviders)
+	foreach (extension, provider; scriptProviders)
 	{
-		if(file.extension.toLower == extension.toLower)
+		if (file.extension.toLower == extension.toLower)
 		{
 			writeln("Found provider");
 			provider.run(file);
