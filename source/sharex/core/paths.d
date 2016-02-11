@@ -41,6 +41,11 @@ string createHistoryFilename()
 	return buildPath(historyDirectory, format("%04d-%02d.json", time.year, time.month));
 }
 
+string createHistoryFilename(ubyte month, short year)
+{
+	return buildPath(historyDirectory, format("%04d-%02d.json", year, month));
+}
+
 string createScreenshotPath(string name)
 {
 	auto time = Clock.currTime();
