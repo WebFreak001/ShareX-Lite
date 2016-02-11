@@ -23,6 +23,7 @@ public import sharex.uploaders.imgur;
 alias UploadDone = Event!(UploadEvent);
 alias HTTPDone = Event!(string);
 alias ProgressChange = Event!(float);
+alias ErrorEvent = Event!(Throwable);
 alias HTTPHeaders = Event!(HTTP);
 
 void uploadHTTP(string path, string url, HTTP.Method method, string formName, HTTPHeaders headers, ProgressChange onProgress, HTTPDone onDone)
@@ -88,6 +89,7 @@ struct UploadJob
 {
 	UploadDone onDone;
 	ProgressChange onProgress;
+	ErrorEvent onError;
 	Thread thread;
 
 	string previewFile;

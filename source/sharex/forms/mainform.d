@@ -40,14 +40,13 @@ import sharex.uploaders.default_;
 import sharex.config.config;
 
 import sharex.core.paths;
+import sharex.core.programs;
 import sharex.core.imagegen;
 
 import std.stdio;
 import std.string;
 import std.path;
 import file = std.file;
-
-import core.thread;
 
 struct PositionEvent
 {
@@ -108,8 +107,6 @@ public:
 
 	Bitmap* captureRegion()
 	{
-		scope (exit)
-			std.stdio.writeln("Focus back");
 		return Selector.captureRegion();
 	}
 
@@ -166,13 +163,19 @@ private:
 				switch (item.getActionName())
 				{
 				case "fullscreen":
-					new Thread({ auto bmp = *captureFullscreen(); uploadImage(addJob, data, bmp); }).start();
+					auto bmp = captureFullscreen();
+					if (bmp)
+						uploadImage(addJob, data, *bmp);
 					break;
 				case "region":
-					new Thread({ uploadImage(addJob, data, *captureRegion()); }).start();
+					auto bmp = captureRegion();
+					if (bmp)
+						uploadImage(addJob, data, *bmp);
 					break;
 				case "objects":
-					new Thread({ uploadImage(addJob, data, *captureRegionObjects()); }).start();
+					auto bmp = captureRegionObjects();
+					if (bmp)
+						uploadImage(addJob, data, *bmp);
 					break;
 				default:
 					throw new Exception("Not Implemented");
@@ -286,7 +289,9 @@ private:
 		toolPanel.add(settingsPanel);
 		toolPanel.add(new Separator(Orientation.HORIZONTAL));
 
-		miscPanel.add(new Button("Open Screenshots Folder"));
+		auto btnScreenshotFolder = new Button("Open Screenshots Folder");
+		btnScreenshotFolder.addOnClicked((b) { openFolder(screenshotDirectory); });
+		miscPanel.add(btnScreenshotFolder);
 		miscPanel.add(new Button("History"));
 		Button btnAbout = new Button("About");
 		btnAbout.addOnClicked(&btnAbout_click);

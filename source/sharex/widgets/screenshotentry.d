@@ -53,6 +53,12 @@ private:
 		_progress.setText("100%");
 		_progress.setFraction(1.0);
 	}
+	
+	void onError(Throwable t)
+	{
+		_progress.setText("Error");
+		_progress.setFraction(0.0);
+	}
 
 public:
 	this(UploadJob* job)
@@ -78,17 +84,20 @@ public:
 		copyMenu.append(new MenuItem(strings.screenshot_copy_shortened, &onMenu, "copyshorturl"));
 		copyMenu.append(new MenuItem(strings.screenshot_copy_thumbnail, &onMenu, "copythumburl"));
 		copyMenu.append(new MenuItem(strings.screenshot_copy_deletion, &onMenu, "copydeleteurl"));
+		copyMenu.append(new SeparatorMenuItem());
 		copyMenu.append(new MenuItem(strings.screenshot_copy_file, &onMenu, "copyfile"));
 		copyMenu.append(new MenuItem(strings.screenshot_copy_image, &onMenu, "copyimage"));
 		copyMenu.append(new MenuItem(strings.screenshot_copy_text, &onMenu, "copytext"));
 		copyMenu.append(new MenuItem(strings.screenshot_copy_thumbnailfile, &onMenu, "copythumbnailfile"));
 		copyMenu.append(new MenuItem(strings.screenshot_copy_thumbnailimage, &onMenu, "copythumbnailimage"));
+		copyMenu.append(new SeparatorMenuItem());
 		copyMenu.append(new MenuItem(strings.screenshot_copy_htmllink, &onMenu, "copyhtmllink"));
 		copyMenu.append(new MenuItem(strings.screenshot_copy_htmlimage, &onMenu, "copyhtmlimage"));
 		copyMenu.append(new MenuItem(strings.screenshot_copy_htmllinkedimage, &onMenu, "copyhtmllinkedimage"));
 		copyMenu.append(new MenuItem(strings.screenshot_copy_bblink, &onMenu, "copybblink"));
 		copyMenu.append(new MenuItem(strings.screenshot_copy_bbimage, &onMenu, "copybbimage"));
 		copyMenu.append(new MenuItem(strings.screenshot_copy_bblinkedimage, &onMenu, "copybblinkedimage"));
+		copyMenu.append(new SeparatorMenuItem());
 		copyMenu.append(new MenuItem(strings.screenshot_copy_filepath, &onMenu, "copyfilepath"));
 		copyMenu.append(new MenuItem(strings.screenshot_copy_filename, &onMenu, "copyfilename"));
 		copyMenu.append(new MenuItem(strings.screenshot_copy_filenamewoext, &onMenu, "copyfilenamewoext"));
@@ -106,6 +115,7 @@ public:
 		_job = job;
 		job.onProgress ~= &onProgress;
 		job.onDone ~= &onDone;
+		job.onError ~= &onError;
 		job.thread.start();
 
 		packStart(new Label(job.title), true, true, 2);

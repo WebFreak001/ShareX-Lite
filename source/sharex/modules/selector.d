@@ -7,25 +7,23 @@ import sharex.core.imagegen;
 import std.bitmanip;
 import std.typecons;
 import std.process;
+import std.file;
+import std.path;
 
 import core.thread;
 
-enum path = "./selector";
+__gshared string path;
 
 private Bitmap* processCapture(string[] args, bool allowRegions = true)
 {
-	std.stdio.writeln("Starting");
 	auto pipes = pipeProcess([path] ~ args);
 	Region[] regions;
 	ubyte[8] longBytes;
 	ubyte[4] intBytes;
 	// rawRead waits
 	auto b = pipes.stdout.rawRead(longBytes);
-	std.stdio.writeln("Done");
-	std.stdio.writeln(b);
 	if (b.length < 8)
 		return null;
-	std.stdio.writeln("Not Null");
 	auto regionCount = bigEndianToNative!ulong(b[0 .. 8]);
 	regions.length = cast(size_t) regionCount;
 	for (size_t i = 0; i < regions.length; i++)
@@ -50,9 +48,7 @@ private Bitmap* processCapture(string[] args, bool allowRegions = true)
 	auto raw = new Bitmap(data, w, h);
 	if (allowRegions)
 	{
-		std.stdio.writeln("Cutting");
 		auto cutted = cutBitmap(*raw, regions);
-		std.stdio.writeln("Cutted");
 		return new Bitmap(cutted.rgb_pixels, cutted.width, cutted.height);
 	}
 	else
@@ -83,4 +79,9 @@ Bitmap* captureRegion()
 Bitmap* captureObjects()
 {
 	return processCapture(["objects"]);
+}
+
+shared static this()
+{
+	path = buildPath(thisExePath.dirName, "./selector");
 }
