@@ -8,7 +8,7 @@ interface IConfig
 	void save();
 }
 
-static IConfig[string] configProviders;
+static __gshared IConfig[string] configProviders;
 
 static void load()
 {

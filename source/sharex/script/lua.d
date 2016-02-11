@@ -108,12 +108,12 @@ class LuaProvider : IScriptProvider
 				lua["uploadImage"] = (size_t ptr) {
 					if (ptr == 0)
 						throw new Exception("Bitmap null");
-					return handleJob(uploadImage(addJob, data, *(cast(Bitmap*) ptr)));
+					return handleJob(uploadImage(&mainForm.addJob, *(cast(Bitmap*) ptr)));
 				};
-				lua["uploadImage"] = (string path) { return handleJob(uploadImage(addJob, data, path)); };
-				lua["uploadFile"] = (string path) { return handleJob(uploadFile(addJob, data, path)); };
-				lua["uploadText"] = (string path) { return handleJob(uploadText(addJob, data, path)); };
-				lua["shortenURL"] = (string path) { return handleJob(shortenURL(addJob, data, path)); };
+				lua["uploadImage"] = (string path) { return handleJob(uploadImage(addJob, path)); };
+				lua["uploadFile"] = (string path) { return handleJob(uploadFile(addJob, path)); };
+				lua["uploadText"] = (string path) { return handleJob(uploadText(addJob, path)); };
+				lua["shortenURL"] = (string path) { return handleJob(shortenURL(addJob, path)); };
 
 				lua["saveImage"] = (size_t ptr) { if (ptr == 0)
 					throw new Exception("Bitmap null"); return saveImage(*(cast(Bitmap*) ptr)); };

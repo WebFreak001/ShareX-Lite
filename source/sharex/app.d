@@ -16,7 +16,7 @@ import sharex.script.provider;
 
 import Config = sharex.config.config;
 
-static MainForm mainForm;
+static __gshared MainForm mainForm;
 
 void main(string[] args)
 {

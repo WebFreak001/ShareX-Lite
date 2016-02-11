@@ -26,7 +26,7 @@ public:
 	}
 }
 
-static Workflow[string] workflows;
+static __gshared Workflow[string] workflows;
 
 shared static this()
 {

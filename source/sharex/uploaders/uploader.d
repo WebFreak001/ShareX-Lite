@@ -114,4 +114,4 @@ interface Uploader
 	UploadJob* uploadText(string text);
 }
 
-static Uploader[string] uploaders;
+static __gshared Uploader[string] uploaders;

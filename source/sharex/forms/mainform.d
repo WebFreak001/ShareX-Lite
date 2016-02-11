@@ -14,6 +14,7 @@ import gtk.Widget;
 import gtk.Menu;
 import gtk.MenuShell;
 import gtk.MenuItem;
+import gtk.CheckMenuItem;
 import gtkc.gtktypes : GtkMenu, GtkAllocation;
 
 import gdk.Event;
@@ -27,6 +28,7 @@ import derelict.sdl2.sdl;
 import derelict.sdl2.mixer;
 
 import sharex.widgets.screenshotentry;
+import sharex.widgets.configmenu;
 
 import Selector = sharex.modules.selector;
 import Workflow = sharex.workflow.workflow;
@@ -38,6 +40,7 @@ import sharex.uploaders.imgur;
 import sharex.uploaders.default_;
 
 import sharex.config.config;
+import sharex.config.general;
 
 import sharex.core.paths;
 import sharex.core.programs;
@@ -77,6 +80,14 @@ private:
 	ListBox screenshots;
 	bool selecting;
 	Bitmap selectedBitmap;
+	//dfmt off
+	ConfigMenu!(
+		"openInEditor", "Open in Editor",
+		"copyImage", "Copy image to Clipboard",
+		"saveImage", "Save Image to File",
+		"uploadImage", "Upload Image",
+		"deleteFile", "Delete File locally") menuAfterCapture;
+	//dfmt on
 
 public:
 	this()
@@ -133,17 +144,40 @@ public:
 	}
 
 private:
-	void processSelection(Pixbuf image, Region[] regions)
-	{
-		selecting = false;
-		selectedBitmap = createBitmap(image, regions);
-	}
-
 	void processBitmap(Bitmap bmp)
 	{
 		if (Mix_PlayChannel(0, screenshotSound, 0) == -1)
 			writeln("Failed to play screenshot sound!\n", Mix_GetError().fromStringz());
 
+		string path;
+		bool deleteAfter = false;
+		if (generalConfig.data.afterCapture.saveImage)
+		{
+			path = bmp.saveImage;
+			deleteAfter = generalConfig.data.afterCapture.deleteFile;
+		}
+		else
+		{
+			path = buildPath(file.tempDir, "screenshot-temp.png");
+			bmp.save(path);
+			deleteAfter = true;
+		}
+		if (generalConfig.data.afterCapture.openInEditor)
+		{
+			// TODO
+		}
+		if (generalConfig.data.afterCapture.copyImage)
+		{
+			Clipboard.setImage(bmp);
+		}
+		if (generalConfig.data.afterCapture.uploadImage)
+		{
+			UploadJob* job = uploadImage(&addJob, path);
+			job.onDone ~= (UploadEvent e) {
+				if (deleteAfter)
+					file.remove(path);
+			};
+		}
 		/*auto job = imgur.uploadImage(bmp);
 		auto entry = new ScreenshotEntry(job);
 		screenshots.insert(entry, -1);
@@ -159,23 +193,22 @@ private:
 				GeneralConfig config = cast(GeneralConfig) configProviders["general"];
 				config.load();
 				auto data = config.data;
-				auto addJob = &this.addJob;
 				switch (item.getActionName())
 				{
 				case "fullscreen":
 					auto bmp = captureFullscreen();
 					if (bmp)
-						uploadImage(addJob, data, *bmp);
+						processBitmap(*bmp);
 					break;
 				case "region":
 					auto bmp = captureRegion();
 					if (bmp)
-						uploadImage(addJob, data, *bmp);
+						processBitmap(*bmp);
 					break;
 				case "objects":
 					auto bmp = captureRegionObjects();
 					if (bmp)
-						uploadImage(addJob, data, *bmp);
+						processBitmap(*bmp);
 					break;
 				default:
 					throw new Exception("Not Implemented");
@@ -274,8 +307,14 @@ private:
 		toolPanel.add(new Separator(Orientation.HORIZONTAL));
 
 		auto btnAfterCapture = new Button("After Capture");
-		linkMenu(btnAfterCapture, buildMenu(["Open in Editor", "Copy Image to Clipboard", "Save Image to File", "Upload Image", "Delete File locally"], ["",
-			"", "", "", ""], &btnUpload_changed));
+		menuAfterCapture = new typeof(menuAfterCapture);
+		menuAfterCapture.openInEditor = generalConfig.data.afterCapture.openInEditor;
+		menuAfterCapture.copyImage = generalConfig.data.afterCapture.copyImage;
+		menuAfterCapture.saveImage = generalConfig.data.afterCapture.saveImage;
+		menuAfterCapture.uploadImage = generalConfig.data.afterCapture.uploadImage;
+		menuAfterCapture.deleteFile = generalConfig.data.afterCapture.deleteFile;
+		menuAfterCapture.onChange ~= &updateAfterCapture;
+		linkMenu(btnAfterCapture, menuAfterCapture);
 		settingsPanel.add(btnAfterCapture);
 
 		auto btnAfterUpload = new Button("After Upload");
@@ -311,5 +350,15 @@ private:
 		main.packEnd(screenshotPanel, true, true, 2);
 
 		add(main);
+	}
+
+	void updateAfterCapture(CheckMenuItem item)
+	{
+		generalConfig.data.afterCapture.openInEditor = menuAfterCapture.openInEditor;
+		generalConfig.data.afterCapture.copyImage = menuAfterCapture.copyImage;
+		generalConfig.data.afterCapture.saveImage = menuAfterCapture.saveImage;
+		generalConfig.data.afterCapture.uploadImage = menuAfterCapture.uploadImage;
+		generalConfig.data.afterCapture.deleteFile = menuAfterCapture.deleteFile;
+		generalConfig.save();
 	}
 }
