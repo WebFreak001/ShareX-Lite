@@ -44,7 +44,7 @@ string createHistoryFilename()
 string createScreenshotPath(string name)
 {
 	auto time = Clock.currTime();
-	string base = name.stripExtension.strip.replace(" ", "");
+	string base = name.stripExtension.strip;
 	if (base == "<auto>")
 		base = "";
 	else
