@@ -7,6 +7,11 @@ import std.algorithm;
 import imageformats;
 
 import gdk.Pixbuf;
+import gtkc.gdkpixbuftypes;
+
+private extern (C) void none(char* pixels, void* data)
+{
+}
 
 struct Bitmap
 {
@@ -27,12 +32,7 @@ struct Bitmap
 
 	Pixbuf toPixbuf()
 	{
-		return new Pixbuf(rgb_pixels, false);
-	}
-
-	Pixbuf toPixbufCopy()
-	{
-		return new Pixbuf(rgb_pixels, true);
+		return new Pixbuf(cast(char[]) rgb_pixels, Colorspace.RGB, false, 8, width, height, width * 3, &none, null);
 	}
 
 	void set(int x, int y, ubyte r, ubyte g, ubyte b)
