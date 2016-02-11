@@ -118,7 +118,7 @@ public:
 		job.onError ~= &onError;
 		job.thread.start();
 
-		packStart(new Label(job.title), true, true, 2);
+		packStart(new Label(job.title, false), true, true, 2);
 		add(_progress = new ProgressBar());
 		_progress.setShowText(true);
 		_progress.setText("0%");
