@@ -3,6 +3,7 @@ module sharex.script.lua;
 import core.thread;
 import std.process;
 import std.stdio;
+import std.functional;
 
 import Clipboard = sharex.core.clipboard;
 
@@ -56,6 +57,10 @@ private string handleJob(UploadJob* job)
 	return evnt.url;
 }
 
+private void dummyJob(UploadJob* job)
+{
+}
+
 class LuaProvider : IScriptProvider
 {
 	void run(string file)
@@ -63,7 +68,9 @@ class LuaProvider : IScriptProvider
 		GeneralConfig config = cast(GeneralConfig) configProviders["general"];
 		config.load();
 		auto data = config.data;
-		auto addJob = &mainForm.addJob;
+		auto addJob = toDelegate(&dummyJob);
+		if(mainForm !is null)
+			addJob = &mainForm.addJob;
 		new Thread({
 			try
 			{
