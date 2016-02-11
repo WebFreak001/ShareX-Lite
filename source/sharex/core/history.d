@@ -9,8 +9,8 @@ import sharex.uploaders.uploader;
 
 void appendHistory(string file, UploadType type, string host, string url, string thumb = "", string deletion = "")
 {
-	if (!screenshotDirectory.exists)
-		mkdirRecurse(screenshotDirectory);
+	if (!historyDirectory.exists)
+		mkdirRecurse(historyDirectory);
 
 	JSONValue entry = ["file" : JSONValue(file), "type" : JSONValue(cast(int) type), "host" : JSONValue(host),];
 	if (url.length > 0)
@@ -20,6 +20,10 @@ void appendHistory(string file, UploadType type, string host, string url, string
 	if (deletion.length > 0)
 		entry["deletion"] = JSONValue(deletion);
 
-	createHistoryFilename.write("," ~ entry.toString());
+	immutable historyFile = createHistoryFilename;
+	if (historyFile.exists)
+		historyFile.append(",\n" ~ entry.toString());
+	else
+		historyFile.write(entry.toString());
 	// Fast write hack. Add [] on reading!
 }
