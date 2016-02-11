@@ -87,6 +87,10 @@ private:
 		"saveImage", "Save Image to File",
 		"uploadImage", "Upload Image",
 		"deleteFile", "Delete File locally") menuAfterCapture;
+	ConfigMenu!(
+		"shortenURL", "Shorten URL",
+		"copyURL", "Copy URL to Clipboard",
+		"openURL", "Open URL") menuAfterUpload;
 	//dfmt on
 
 public:
@@ -164,7 +168,7 @@ private:
 		}
 		if (generalConfig.data.afterCapture.openInEditor)
 		{
-			// TODO
+			// TODO: Open in default editor
 		}
 		if (generalConfig.data.afterCapture.copyImage)
 		{
@@ -176,6 +180,18 @@ private:
 			job.onDone ~= (UploadEvent e) {
 				if (deleteAfter)
 					file.remove(path);
+				if (e.success)
+				{
+					// TODO: shorten url
+					if (generalConfig.data.afterUpload.copyURL)
+					{
+						Clipboard.setText(e.url);
+					}
+					if (generalConfig.data.afterUpload.openURL)
+					{
+						openURL(e.url);
+					}
+				}
 			};
 		}
 		/*auto job = imgur.uploadImage(bmp);
@@ -318,7 +334,12 @@ private:
 		settingsPanel.add(btnAfterCapture);
 
 		auto btnAfterUpload = new Button("After Upload");
-		linkMenu(btnAfterUpload, buildMenu(["Shorten URL", "Copy URL to clipboard", "Open URL"], ["", "", ""], &btnUpload_changed));
+		menuAfterUpload = new typeof(menuAfterUpload);
+		menuAfterUpload.shortenURL = generalConfig.data.afterUpload.shortenURL;
+		menuAfterUpload.copyURL = generalConfig.data.afterUpload.copyURL;
+		menuAfterUpload.openURL = generalConfig.data.afterUpload.openURL;
+		menuAfterUpload.onChange ~= &updateAfterUpload;
+		linkMenu(btnAfterUpload, menuAfterUpload);
 		settingsPanel.add(btnAfterUpload);
 
 		settingsPanel.add(new Button("Destination Settings"));
@@ -359,6 +380,14 @@ private:
 		generalConfig.data.afterCapture.saveImage = menuAfterCapture.saveImage;
 		generalConfig.data.afterCapture.uploadImage = menuAfterCapture.uploadImage;
 		generalConfig.data.afterCapture.deleteFile = menuAfterCapture.deleteFile;
+		generalConfig.save();
+	}
+
+	void updateAfterUpload(CheckMenuItem item)
+	{
+		generalConfig.data.afterUpload.shortenURL = menuAfterUpload.shortenURL;
+		generalConfig.data.afterUpload.openURL = menuAfterUpload.openURL;
+		generalConfig.data.afterUpload.copyURL = menuAfterUpload.copyURL;
 		generalConfig.save();
 	}
 }

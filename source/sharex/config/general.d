@@ -51,6 +51,15 @@ public:
 
 		AfterCapture afterCapture;
 
+		struct AfterUpload
+		{
+			bool shortenURL = false;
+			bool copyURL = true;
+			bool openURL = false;
+		}
+
+		AfterUpload afterUpload;
+
 		struct Editors
 		{
 			string imageEditor;
