@@ -11,7 +11,7 @@ interface IScriptProvider
 	void run(string file);
 }
 
-static IScriptProvider[string] scriptProviders;
+static __gshared IScriptProvider[string] scriptProviders;
 
 static void run(string file)
 {

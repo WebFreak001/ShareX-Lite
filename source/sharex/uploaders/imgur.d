@@ -15,7 +15,7 @@ import core.thread;
 
 enum ImgurHostName = "imgur";
 
-static this()
+shared static this()
 {
 	uploaders[ImgurHostName] = new ImgurUploader();
 }

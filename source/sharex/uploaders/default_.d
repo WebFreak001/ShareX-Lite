@@ -21,11 +21,11 @@ auto doJob(alias fn, S...)(void delegate(UploadJob*) addJob, S args)
 	return job;
 }
 
-alias uploadImage = doJob!(uploadImageImpl, GeneralConfig.Data, Bitmap);
-alias uploadImage = doJob!(uploadImageImpl, GeneralConfig.Data, string);
-alias uploadFile = doJob!(uploadFileImpl, GeneralConfig.Data, string);
-alias uploadText = doJob!(uploadTextImpl, GeneralConfig.Data, string);
-alias shortenURL = doJob!(shortenURLImpl, GeneralConfig.Data, string);
+alias uploadImage = doJob!(uploadImageImpl, Bitmap);
+alias uploadImage = doJob!(uploadImageImpl, string);
+alias uploadFile = doJob!(uploadFileImpl, string);
+alias uploadText = doJob!(uploadTextImpl, string);
+alias shortenURL = doJob!(shortenURLImpl, string);
 
 string saveImage(Bitmap bmp)
 {
@@ -38,7 +38,7 @@ string saveImage(Bitmap bmp)
 	return f;
 }
 
-UploadJob* uploadImageImpl(GeneralConfig.Data config, Bitmap bmp)
+UploadJob* uploadImageImpl(Bitmap bmp)
 {
 	string f = createScreenshotPath("<auto>.png");
 	if (!exists(f.dirName))
@@ -46,17 +46,17 @@ UploadJob* uploadImageImpl(GeneralConfig.Data config, Bitmap bmp)
 		mkdirRecurse(f.dirName);
 	}
 	bmp.save(f);
-	return uploadImageImpl(config, f);
+	return uploadImageImpl(f);
 }
 
-UploadJob* uploadImageImpl(GeneralConfig.Data config, string file)
+UploadJob* uploadImageImpl(string file)
 {
-	foreach (name; config.imageUploader)
+	foreach (name; generalConfig.data.uploaders.imageUploader)
 	{
 		UploadJob* job;
 		if (name == ":special")
 		{
-			job = handleSpecialImpl(config, "image", file);
+			job = handleSpecialImpl("image", file);
 		}
 		else
 		{
@@ -64,22 +64,22 @@ UploadJob* uploadImageImpl(GeneralConfig.Data config, string file)
 		}
 		if (job)
 			return job;
-		if (!config.fallthroughServices)
+		if (!generalConfig.data.uploaders.fallthroughServices)
 			throw new Exception("Could not upload image");
 	}
-	if (!config.fallbackToFileUploader)
+	if (!generalConfig.data.uploaders.fallbackToFileUploader)
 		throw new Exception("Could not upload image");
-	return uploadFileImpl(config, file);
+	return uploadFileImpl(file);
 }
 
-UploadJob* uploadFileImpl(GeneralConfig.Data config, string file)
+UploadJob* uploadFileImpl(string file)
 {
-	foreach (name; config.fileUploader)
+	foreach (name; generalConfig.data.uploaders.fileUploader)
 	{
 		UploadJob* job;
 		if (name == ":special")
 		{
-			job = handleSpecialImpl(config, "file", file);
+			job = handleSpecialImpl("file", file);
 		}
 		else
 		{
@@ -87,20 +87,20 @@ UploadJob* uploadFileImpl(GeneralConfig.Data config, string file)
 		}
 		if (job)
 			return job;
-		if (!config.fallthroughServices)
+		if (!generalConfig.data.uploaders.fallthroughServices)
 			throw new Exception("Could not upload file");
 	}
 	throw new Exception("Could not upload file");
 }
 
-UploadJob* uploadTextImpl(GeneralConfig.Data config, string text)
+UploadJob* uploadTextImpl(string text)
 {
-	foreach (name; config.textUploader)
+	foreach (name; generalConfig.data.uploaders.textUploader)
 	{
 		UploadJob* job;
 		if (name == ":special")
 		{
-			job = handleSpecialImpl(config, "text", text);
+			job = handleSpecialImpl("text", text);
 		}
 		else
 		{
@@ -108,10 +108,10 @@ UploadJob* uploadTextImpl(GeneralConfig.Data config, string text)
 		}
 		if (job)
 			return job;
-		if (!config.fallthroughServices)
+		if (!generalConfig.data.uploaders.fallthroughServices)
 			throw new Exception("Could not upload text");
 	}
-	if (!config.fallbackToFileUploader)
+	if (!generalConfig.data.uploaders.fallbackToFileUploader)
 		throw new Exception("Could not upload image");
 	string f = createScreenshotPath("<auto>.txt");
 	if (!exists(f.dirName))
@@ -119,17 +119,17 @@ UploadJob* uploadTextImpl(GeneralConfig.Data config, string text)
 		mkdirRecurse(f.dirName);
 	}
 	write(f, text);
-	return uploadFileImpl(config, f);
+	return uploadFileImpl(f);
 }
 
-UploadJob* shortenURLImpl(GeneralConfig.Data config, string url)
+UploadJob* shortenURLImpl(string url)
 {
-	foreach (name; config.linkShortener)
+	foreach (name; generalConfig.data.uploaders.linkShortener)
 	{
 		UploadJob* job;
 		if (name == ":special")
 		{
-			job = handleSpecialImpl(config, "link", url);
+			job = handleSpecialImpl("link", url);
 		}
 		else
 		{
@@ -137,15 +137,15 @@ UploadJob* shortenURLImpl(GeneralConfig.Data config, string url)
 		}
 		if (job)
 			return job;
-		if (!config.fallthroughServices)
+		if (!generalConfig.data.uploaders.fallthroughServices)
 			throw new Exception("Could not shorten url");
 	}
 	throw new Exception("Could not shorten url");
 }
 
-UploadJob* handleSpecialImpl(GeneralConfig.Data config, string type, string data)
+UploadJob* handleSpecialImpl(string type, string data)
 {
-	foreach (key, value; config.specialUploaders)
+	foreach (key, value; generalConfig.data.uploaders.specialUploaders)
 	{
 		auto pos = key.indexOf(' ');
 		string[] types = key[0 .. pos].split('/');

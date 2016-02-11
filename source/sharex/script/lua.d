@@ -62,8 +62,6 @@ class LuaProvider : IScriptProvider
 	{
 		GeneralConfig config = cast(GeneralConfig) configProviders["general"];
 		config.load();
-		auto data = config.data;
-		auto addJob = &mainForm.addJob;
 		new Thread({
 			try
 			{
@@ -101,12 +99,12 @@ class LuaProvider : IScriptProvider
 				lua["uploadImage"] = (size_t ptr) {
 					if (ptr == 0)
 						throw new Exception("Bitmap null");
-					return handleJob(uploadImage(addJob, data, *(cast(Bitmap*) ptr)));
+					return handleJob(uploadImage(&mainForm.addJob, *(cast(Bitmap*) ptr)));
 				};
-				lua["uploadImage"] = (string path) { return handleJob(uploadImage(addJob, data, path)); };
-				lua["uploadFile"] = (string path) { return handleJob(uploadFile(addJob, data, path)); };
-				lua["uploadText"] = (string path) { return handleJob(uploadText(addJob, data, path)); };
-				lua["shortenURL"] = (string path) { return handleJob(shortenURL(addJob, data, path)); };
+				lua["uploadImage"] = (string path) { return handleJob(uploadImage(&mainForm.addJob, path)); };
+				lua["uploadFile"] = (string path) { return handleJob(uploadFile(&mainForm.addJob, path)); };
+				lua["uploadText"] = (string path) { return handleJob(uploadText(&mainForm.addJob, path)); };
+				lua["shortenURL"] = (string path) { return handleJob(shortenURL(&mainForm.addJob, path)); };
 
 				lua["saveImage"] = (size_t ptr) { if (ptr == 0)
 					throw new Exception("Bitmap null"); return saveImage(*(cast(Bitmap*) ptr)); };
